@@ -1,0 +1,25 @@
+{
+  "name": "phonebook-backend",
+  "version": "1.0.0",
+  "description": "fso-phonebook-backend",
+  "main": "index.ts",
+  "scripts": {
+    "tsc": "tsc",
+    "start": "node build/index.js",
+    "dev": "ts-node-dev index.ts",
+    "test": "test"
+  },
+  "author": "Juuso Pyykkönen",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.3"
+  }
+}
