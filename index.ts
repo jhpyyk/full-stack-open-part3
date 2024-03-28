@@ -5,7 +5,7 @@ app.use(express.json())
 
 const PORT = 3001
 
-const persons = [
+let persons = [
     {
         "name": "Arto Hellas",
         "number": "040-123456",
@@ -33,13 +33,23 @@ app.get('/api/persons', (_request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const person = persons.find(person => person.id === request.params.id)
+    const person = persons.find(person => person.id == request.params.id)
     if (!person) {
         response.status(404).end()
         return
     }
 
     response.json(person)
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    if (!persons.some(person => person.id === request.params.id)) {
+        response.status(404).end()
+        return
+    }
+
+    persons = persons.filter(person => person.id !== request.params.id)
+    response.status(204).end()
 })
 
 app.get('/info', (_request, response) => {
