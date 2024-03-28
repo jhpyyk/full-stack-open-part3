@@ -52,6 +52,13 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
+app.post('/api/persons', (request, response) => {
+    const person = request.body
+    person.id = generateId()
+    persons = persons.concat(person)
+    response.json(person)
+})
+
 app.get('/info', (_request, response) => {
     const info =
         `
@@ -64,3 +71,8 @@ app.get('/info', (_request, response) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
+
+const generateId = (): string => {
+    const id = Math.floor(Math.random() * 10000000)
+    return id.toString()
+}
