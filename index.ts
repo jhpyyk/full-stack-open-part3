@@ -32,6 +32,16 @@ app.get('/api/persons', (_request, response) => {
     response.json(persons)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+    const person = persons.find(person => person.id === request.params.id)
+    if (!person) {
+        response.status(404).end()
+        return
+    }
+
+    response.json(person)
+})
+
 app.get('/info', (_request, response) => {
     const info =
         `
