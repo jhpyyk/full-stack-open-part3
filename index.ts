@@ -1,11 +1,12 @@
 import express from "express"
+import { PersonType } from "./types"
 
 const app = express()
 app.use(express.json())
 
 const PORT = 3001
 
-let persons = [
+let persons: PersonType[] = [
     {
         "name": "Arto Hellas",
         "number": "040-123456",
@@ -53,10 +54,20 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-    const person = request.body
-    person.id = generateId()
-    persons = persons.concat(person)
-    response.json(person)
+    try {
+        const newPerson = toNewPerson(request.body)
+        if (persons.some(person => person.name === newPerson.name)) {
+            throw new Error('Name must be unique')
+        }
+        persons = persons.concat(newPerson)
+        response.json(newPerson)
+    } catch (error: unknown) {
+        let errorMessage = 'Something went wrong.';
+        if (error instanceof Error) {
+            errorMessage = ' Error: ' + error.message;
+        }
+        response.status(400).send(errorMessage);
+    }
 })
 
 app.get('/info', (_request, response) => {
@@ -75,4 +86,26 @@ app.listen(PORT, () => {
 const generateId = (): string => {
     const id = Math.floor(Math.random() * 10000000)
     return id.toString()
+}
+
+const toNewPerson = (object: unknown): PersonType => {
+    if (isPersonWithoutId(object)) {
+        const newPerson = {
+            name: object.name,
+            number: object.number,
+            id: generateId()
+        }
+        return newPerson
+    } else {
+        throw new Error('Incorrect data')
+    }
+}
+
+const isPersonWithoutId = (object: unknown): object is Omit<PersonType, 'id'> => {
+    if (!object || typeof object !== 'object') {
+        return false
+    }
+    return (('name' in object && typeof object.name === 'string') &&
+        ('number' in object && typeof object.number === 'string')
+    )
 }
