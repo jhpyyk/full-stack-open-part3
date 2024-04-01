@@ -1,8 +1,10 @@
 import express from "express"
+import cors = require("cors")
 import { PersonType } from "./types"
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 
 const PORT = 3001
 
@@ -39,18 +41,17 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
         return
     }
-
     response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    if (!persons.some(person => person.id === request.params.id)) {
+    const personToDelete = persons.find(person => person.id === request.params.id)
+    if (!personToDelete) {
         response.status(404).end()
         return
     }
-
     persons = persons.filter(person => person.id !== request.params.id)
-    response.status(204).end()
+    response.json(personToDelete)
 })
 
 app.post('/api/persons', (request, response) => {
