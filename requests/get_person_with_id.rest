@@ -1,1 +1,1 @@
-GET http://localhost:3001/api/persons/3
+GET https://full-stack-open-part3-phonebook-backend.onrender.com/api/persons/3
