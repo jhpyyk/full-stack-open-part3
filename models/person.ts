@@ -25,9 +25,9 @@ const personSchema = new mongoose.Schema<Omit<PersonType, 'id'>>({
 
 personSchema.set('toJSON', {
     virtuals: true,
+    versionKey: false,
     transform: (_document, returnedObject) => {
         delete returnedObject._id
-        delete returnedObject.__v
     }
 }
 )
