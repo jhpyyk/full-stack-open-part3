@@ -1,6 +1,7 @@
 import express from "express"
 import cors = require("cors")
 import { PersonType } from "./types"
+import Person from "./models/person"
 
 const app = express()
 app.use(express.json())
@@ -33,7 +34,13 @@ let persons: PersonType[] = [
 ]
 
 app.get('/api/persons', (_request, response) => {
-    response.json(persons)
+    Person.find({})
+        .then(person => {
+            response.json(person)
+        })
+        .catch(err => {
+            console.log(err)
+        })
 })
 
 app.get('/api/persons/:id', (request, response) => {
