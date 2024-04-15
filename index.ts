@@ -22,77 +22,58 @@ app.get('/api/persons', (_request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-    try {
-        const newPerson = toNewPerson(request.body)
-
-        newPerson.save()
-            .then(person => {
-                response.json(person)
-            })
-            .catch(err => {
-                response.status(400).send(err)
-            })
-
-    } catch (error: unknown) {
-        let errorMessage = 'Something went wrong.';
-        if (error instanceof Error) {
-            errorMessage = ' Error: ' + error.message;
-        }
-        response.status(400).send(errorMessage);
-    }
-})
-
-/* app.get('/api/persons/:id', (request, response) => {
-    const person = persons.find(person => person.id == request.params.id)
-    if (!person) {
-        response.status(404).end()
+    const newPerson = toNewPerson(request.body)
+    if (!newPerson) {
+        response.status(400).end()
         return
     }
-    response.json(person)
+
+    newPerson.save()
+        .then(person => {
+            response.json(person)
+        })
+        .catch(error => {
+            response.status(400).send(error)
+        })
+
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            response.status(400).send({ error: 'malformatted id' })
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const personToDelete = persons.find(person => person.id === request.params.id)
-    if (!personToDelete) {
-        response.status(404).end()
-        return
-    }
-    persons = persons.filter(person => person.id !== request.params.id)
-    response.json(personToDelete)
-}) */
-
-/* app.post('/api/persons', (request, response) => {
-    try {
-        const newPerson = toNewPerson(request.body)
-        if (persons.some(person => person.name === newPerson.name)) {
-            throw new Error('Name must be unique')
-        }
-        persons = persons.concat(newPerson)
-        response.json(newPerson)
-    } catch (error: unknown) {
-        let errorMessage = 'Something went wrong.';
-        if (error instanceof Error) {
-            errorMessage = ' Error: ' + error.message;
-        }
-        response.status(400).send(errorMessage);
-    }
-}) */
-
-/* app.get('/info', (_request, response) => {
-    const info =
-        `
-            <p>The phonebook has info for ${persons.length} people</p>
-            <p>${Date()}</p>
-        `
-    response.send(info)
-}) */
+    Person.findByIdAndDelete(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            response.status(400).send({ error: 'malformatted id' })
+        })
+})
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
 
 
-const toNewPerson = (object: unknown): HydratedDocument<PersonType> => {
+const toNewPerson = (object: unknown): HydratedDocument<PersonType> | undefined => {
     if (isPerson(object)) {
         const newPerson: HydratedDocument<PersonType> = new Person({
             name: object.name,
@@ -100,7 +81,7 @@ const toNewPerson = (object: unknown): HydratedDocument<PersonType> => {
         })
         return newPerson
     } else {
-        throw new Error('Incorrect data')
+        return undefined
     }
 }
 
