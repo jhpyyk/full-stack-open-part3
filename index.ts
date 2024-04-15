@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express"
+import express, { NextFunction, Request, RequestHandler, Response } from "express"
 import cors = require("cors")
 import { PersonType } from "./types"
 import Person from "./models/person"
@@ -66,6 +66,23 @@ app.put('/api/persons/:id', (request, response, next) => {
         .then(person => response.json(person))
         .catch(error => next(error))
 })
+
+app.get('/info', (async (_request, response, next) => {
+    console.log('info')
+    let count = 0
+    await Person.countDocuments()
+        .then(docCount => {
+            count = docCount
+            console.log(count)
+        })
+        .catch(error => next(error))
+    const info =
+        `
+            <p>The phonebook has info for ${count} people</p>
+            <p>${Date()}</p>
+        `
+    response.send(info)
+}) as RequestHandler)
 
 const errorHandler = (error: Error, _request: Request, response: Response, next: NextFunction) => {
     console.error(error.message)
