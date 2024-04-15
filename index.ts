@@ -25,13 +25,11 @@ app.post('/api/persons', (request, response, next) => {
         response.status(400).end()
         return
     }
-
     newPerson.save()
         .then(person => {
             response.json(person)
         })
         .catch(error => next(error))
-
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -58,12 +56,24 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+    const newPerson = toNewPerson(request.body)
+    if (!newPerson) {
+        response.status(400).end()
+        return
+    }
+    Person.findOneAndUpdate({ name: newPerson.name }, { number: newPerson.number })
+        .then(person => response.json(person))
+        .catch(error => next(error))
+})
+
 const errorHandler = (error: Error, _request: Request, response: Response, next: NextFunction) => {
     console.error(error.message)
 
     if (error.name === 'CastError') {
         response.status(400).send({ error: 'malformatted id' })
     }
+
     next(error)
 }
 
