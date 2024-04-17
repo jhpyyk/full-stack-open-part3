@@ -19,7 +19,7 @@ mongoose.connect(url)
     })
 
 const personSchema = new mongoose.Schema<Omit<PersonType, 'id'>>({
-    name: { type: String, required: true },
+    name: { type: String, required: true, minlength: 3 },
     number: { type: String, required: true },
 })
 

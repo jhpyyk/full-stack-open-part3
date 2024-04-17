@@ -1,7 +1,7 @@
-POST https://full-stack-open-part3-phonebook-backend.onrender.com/api/persons
+POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "Maija",
+    "name": "M",
     "number": "000777"
 }
